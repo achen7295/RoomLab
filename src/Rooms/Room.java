@@ -18,7 +18,7 @@ public class Room {
 	 */
 	public void enterRoom(Person x)
 	{
-		System.out.println("You enter a plain old room");
+		System.out.println("Find supplies quickly!");
 		occupant = x;
 		x.setxLoc(this.xLoc);
 		x.setyLoc(this.yLoc);
@@ -32,5 +32,5 @@ public class Room {
 	{
 		occupant = null;
 	}
-	
+
 }

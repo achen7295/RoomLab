@@ -2,8 +2,9 @@ package Game;
 
 import People.Person;
 import Rooms.Room;
-import Rooms.WinningRoom;
+import Rooms.Escape;
 
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class Runner {
@@ -23,32 +24,53 @@ public class Runner {
 				building[x][y] = new Room(x,y);
 			}
 		}
-		
-		//Create a random winning room.
-		int x = (int)(Math.random()*building.length);
-		int y = (int)(Math.random()*building.length);
-		building[x][y] = new WinningRoom(x, y);
-		 
-		 //Setup player 1 and the input scanner
-		Person player1 = new Person("FirstName", "FamilyName", 0,0);
+		//Setup player 1 and the input scanner
+		Person player1 = new Person("FirstName", "FamilyName", 10, 0,0);
 		building[0][0].enterRoom(player1);
 		Scanner in = new Scanner(System.in);
+		System.out.println("You have stumbled into a cave!");
+		System.out.println("Your current health is: " + player1.getHealth());
+
+		//Board Creator
+		for(int x = 0; x < building.length; x++)
+		{
+			for (int y = 0; y < building[x].length; y++)
+			{
+				if(x == 0 && y == 0)
+					System.out.print("|X|");
+				else
+					System.out.print("| |");
+			}
+			System.out.println();
+		}
+
+		//Create a random winning room.
+		 int winX = (int)(Math.random()*building.length);
+		int winY = (int)(Math.random()*building.length);
+		building[winX][winY] = new Escape(winX, winY);
+
 		while(gameOn)
 		{
 			System.out.println("Where would you like to move? (Choose N, S, E, W)");
+			System.out.println("Your coordinates: row = " + player1.getxLoc() + " col = " + player1.getyLoc());
 			String move = in.nextLine();
 			if(validMove(move, player1, building))
 			{
-				System.out.println("Your coordinates: row = " + player1.getxLoc() + " col = " + player1.getyLoc());
-				
+				for(int x = 0; x < building.length; x++)
+				{
+					for (int y = 0; y < building[x].length; y++)
+					{
+						if(x == player1.getxLoc() && y == player1.getyLoc())
+							System.out.print("|X|");
+						else
+							System.out.print("| |");
+					}
+					System.out.println();
+				}
 			}
-			else {
+			else
 				System.out.println("Please choose a valid move.");
-			}
-			
-			
 		}
-		in.close();
 	}
 
 	/**

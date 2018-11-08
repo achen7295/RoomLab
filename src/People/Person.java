@@ -7,10 +7,28 @@ public class Person {
 	String firstName;
 	String familyName;
 	int xLoc, yLoc;
+	int health;
 
+	public void sethealth(int health) {
+		this.health = health;
+	}
+
+	public int loseHealth(int x){
+		this.health = this.health - x;
+		return health;
+	}
+
+	public int gainHealth(int x){
+		this.health = this.health + x;
+		return this.health;
+	}
 
 	public int getxLoc() {
 		return xLoc;
+	}
+
+	public int getHealth(){
+		return health;
 	}
 
 	public void setxLoc(int xLoc) {
@@ -25,12 +43,13 @@ public class Person {
 		this.yLoc = yLoc;
 	}
 
-	public Person (String firstName, String familyName, int xLoc, int yLoc)
+	public Person (String firstName, String familyName,int health, int xLoc, int yLoc)
 	{
 		this.firstName = firstName;
 		this.familyName = familyName;
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
+		this.health = health;
 	}
 
 
