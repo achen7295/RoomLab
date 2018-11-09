@@ -19,7 +19,7 @@ public class Runner {
 	public static void main(String[] args)
 	{
 		//Fill the building with normal rooms
-		Board building = new Board(5,5);
+		Board building = new Board(7,7);
 		for (int x = 0; x < building.board.length; x++)
 		{
 			for (int y = 0; y < building.board[x].length; y++)
@@ -68,11 +68,11 @@ public class Runner {
 				System.out.println("Where would you like to move? (Choose N, S, E, W)");
 				System.out.println("Your coordinates are X:" + player1.getxLoc() + " Y:" + player1.getyLoc());
 				System.out.println(("Your current health is: " + player1.getHealth()));
-				System.out.println("You bag contains " + "food:" + bag.getFood() + " rocks:" + bag.getAmmo() + " rope:" + bag.getRope());
+				System.out.println("You bag contains " + "food:" + bag.getFood() + " ammo:" + bag.getAmmo() + " rope:" + bag.getRope());
 					if (bag.getFood() > 1 && bag.getAmmo() > 1 && bag.getRope() > 1) {
 				System.out.println("You have found enough supplies to leave!");
 				System.out.print("Head to position x:4 y:4 to leave!");
-				building.board[3][4] = new Escape(4,4);
+				building.board[4][4] = new Escape(4,4);
 			}
 				String move = in.nextLine();
 				if (validMove(move, player1, bag, desc, building.board)) {
