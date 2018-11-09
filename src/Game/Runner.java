@@ -1,10 +1,14 @@
 package Game;
 
 import People.Person;
+import People.Bag;
+import People.Destruction;
 import Rooms.Room;
+import Rooms.Food;
+import Rooms.Ammo;
 import Rooms.Escape;
+import Rooms.Rope;
 
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class Runner {
@@ -14,63 +18,76 @@ public class Runner {
 	
 	public static void main(String[] args)
 	{
-		Room[][] building = new Room[5][5];
-		
 		//Fill the building with normal rooms
-		for (int x = 0; x<building.length; x++)
+		Board building = new Board(5,5);
+		for (int x = 0; x < building.board.length; x++)
 		{
-			for (int y = 0; y < building[x].length; y++)
+			for (int y = 0; y < building.board[x].length; y++)
 			{
-				building[x][y] = new Room(x,y);
+				building.board[x][y] = new Room(x, y);
 			}
 		}
+
 		//Setup player 1 and the input scanner
 		Person player1 = new Person("FirstName", "FamilyName", 10, 0,0);
-		building[0][0].enterRoom(player1);
+		Bag bag = new Bag(0, 0,0);
+		Destruction desc = new Destruction(0,0);
+		building.board[0][0].enterRoom(player1,bag);
 		Scanner in = new Scanner(System.in);
-		System.out.println("You have stumbled into a cave!");
-		System.out.println("Your current health is: " + player1.getHealth());
+		System.out.println("You are in an apocalypse and you need to find some supplies!");
 
-		//Board Creator
-		for(int x = 0; x < building.length; x++)
+		//Creates first instance of the board
+		for(int x = 0; x < building.board.length; x++)
 		{
-			for (int y = 0; y < building[x].length; y++)
+			for (int y = 0; y < building.board[x].length; y++)
 			{
 				if(x == 0 && y == 0)
-					System.out.print("|X|");
+					System.out.print("[O]");
 				else
-					System.out.print("| |");
+					System.out.print("[ ]");
 			}
 			System.out.println();
 		}
 
-		//Create a random winning room.
-		 int winX = (int)(Math.random()*building.length);
-		int winY = (int)(Math.random()*building.length);
-		building[winX][winY] = new Escape(winX, winY);
+			//Create two rations that spawn every game
+			int foodX = ((int)(Math.random() * building.board.length));
+			int foodY = (int)(Math.random() * building.board.length);
+			building.board[foodX][foodY] = new Food(foodX, foodY);
 
-		while(gameOn)
-		{
-			System.out.println("Where would you like to move? (Choose N, S, E, W)");
-			System.out.println("Your coordinates: row = " + player1.getxLoc() + " col = " + player1.getyLoc());
-			String move = in.nextLine();
-			if(validMove(move, player1, building))
-			{
-				for(int x = 0; x < building.length; x++)
-				{
-					for (int y = 0; y < building[x].length; y++)
-					{
-						if(x == player1.getxLoc() && y == player1.getyLoc())
-							System.out.print("|X|");
-						else
-							System.out.print("| |");
-					}
-					System.out.println();
-				}
+			//Create two rocks that spawn every game
+			int ammoX = ((int)(Math.random() * building.board.length));
+			int ammoY = (int)(Math.random() * building.board.length);
+			building.board[ammoX][ammoY] = new Ammo(ammoX, ammoY);
+
+			//Creates two ropes that spawn every game
+			int ropeX = ((int)(Math.random() * building.board.length));
+			int ropeY = (int)(Math.random() * building.board.length);
+			building.board[ropeX][ropeY] = new Rope(ropeX, ropeY);
+
+		while(gameOn) {
+				System.out.println("Where would you like to move? (Choose N, S, E, W)");
+				System.out.println("Your coordinates are X:" + player1.getxLoc() + " Y:" + player1.getyLoc());
+				System.out.println(("Your current health is: " + player1.getHealth()));
+				System.out.println("You bag contains " + "food:" + bag.getFood() + " rocks:" + bag.getAmmo() + " rope:" + bag.getRope());
+					if (bag.getFood() > 1 && bag.getAmmo() > 1 && bag.getRope() > 1) {
+				System.out.println("You have found enough supplies to leave!");
+				System.out.print("Head to position x:4 y:4 to leave!");
+				building.board[3][4] = new Escape(4,4);
 			}
-			else
-				System.out.println("Please choose a valid move.");
-		}
+				String move = in.nextLine();
+				if (validMove(move, player1, bag, desc, building.board)) {
+					for (int x = 0; x < building.board.length; x++) {
+						for (int y = 0; y < building.board[x].length; y++) {
+							if (x == player1.getxLoc() && y == player1.getyLoc())
+								System.out.print("[O]");
+							else
+								System.out.print("[ ]");
+						}
+						System.out.println();
+					}
+				} else
+					System.out.println("You cannot go there.");
+			}
 	}
 
 	/**
@@ -80,56 +97,67 @@ public class Runner {
 	 * @param map the 2D array of rooms
 	 * @return
 	 */
-	public static boolean validMove(String move, Person p, Room[][] map)
+	public static boolean validMove(String move, Person p, Bag b, Destruction d, Room[][] map)
 	{
 		move = move.toLowerCase().trim();
 		switch (move) {
 			case "n":
-				if (p.getxLoc() > 0)
-				{
-					map[p.getxLoc()][p.getyLoc()].leaveRoom(p);
-					map[p.getxLoc()-1][p.getyLoc()].enterRoom(p);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+					if (p.getxLoc() > 0) {
+						map[p.getxLoc()][p.getyLoc()].leaveRoom(p, b);
+						map[p.getxLoc() - 1][p.getyLoc()].enterRoom(p, b);
+						if (p.getyLoc() == d.getydLoc() && p.getxLoc() == d.getxdLoc()) {
+							System.out.println("The path has been blocked move another way!");
+							return false;
+						}
+						map[p.getxLoc() + 1][p.getyLoc()].destroyRoom(d);
+						return true;
+					} else {
+						return false;
+					}
 			case "e":
-				if (p.getyLoc()< map[p.getyLoc()].length -1)
-				{
-					map[p.getxLoc()][p.getyLoc()].leaveRoom(p);
-					map[p.getxLoc()][p.getyLoc() + 1].enterRoom(p);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+					if (p.getyLoc() < map[p.getyLoc()].length - 1) {
+						map[p.getxLoc()][p.getyLoc()].leaveRoom(p, b);
+						map[p.getxLoc()][p.getyLoc() + 1].enterRoom(p, b);
+						if (p.getyLoc() == d.getydLoc() && p.getxLoc() == d.getxdLoc()) {
+							System.out.println("The path has been blocked move another way!");
+							return false;
+						}
+						map[p.getxLoc()][p.getyLoc() - 1].destroyRoom(d);
+						return true;
+					} else {
+						return false;
+					}
+
 
 			case "s":
-				if (p.getxLoc() < map.length - 1)
-				{
-					map[p.getxLoc()][p.getyLoc()].leaveRoom(p);
-					map[p.getxLoc()+1][p.getyLoc()].enterRoom(p);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+					if (p.getxLoc() < map.length - 1) {
+						map[p.getxLoc()][p.getyLoc()].leaveRoom(p, b);
+						map[p.getxLoc() + 1][p.getyLoc()].enterRoom(p, b);
+						if (p.getyLoc() == d.getydLoc() && p.getxLoc() == d.getxdLoc()) {
+							System.out.println("The path has been blocked move another way!");
+							return false;
+						}
+						map[p.getxLoc() - 1][p.getyLoc()].destroyRoom(d);
+						return true;
+					} else {
+						return false;
+					}
+
 
 			case "w":
-				if (p.getyLoc() > 0)
-				{
-					map[p.getxLoc()][p.getyLoc()].leaveRoom(p);
-					map[p.getxLoc()][p.getyLoc()-1].enterRoom(p);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+					if (p.getyLoc() > 0) {
+						map[p.getxLoc()][p.getyLoc()].leaveRoom(p, b);
+						map[p.getxLoc()][p.getyLoc() - 1].enterRoom(p, b);
+						if (p.getyLoc() == d.getydLoc() && p.getxLoc() == d.getxdLoc()) {
+							System.out.println("The path has been blocked move another way!");
+							return false;
+						}
+						map[p.getxLoc()][p.getyLoc() + 1].destroyRoom(d);
+						return true;
+					} else {
+						return false;
+					}
+
 			default:
 				break;
 					

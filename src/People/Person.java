@@ -1,17 +1,9 @@
 package People;
 
-/**
- * Person represents the player as they move through the game.
- */
 public class Person {
 	String firstName;
 	String familyName;
-	int xLoc, yLoc;
-	int health;
-
-	public void sethealth(int health) {
-		this.health = health;
-	}
+	int xLoc, yLoc,health;
 
 	public int loseHealth(int x){
 		this.health = this.health - x;

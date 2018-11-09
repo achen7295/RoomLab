@@ -1,14 +1,14 @@
 package Rooms;
 
-import Game.Runner;
 import People.Person;
 import People.Bag;
 
-public class Escape extends Room
+public class Ammo extends Room
 {
 
-    public Escape(int x, int y) {
+    public Ammo(int x, int y) {
         super(x, y);
+
     }
 
     /**
@@ -16,12 +16,13 @@ public class Escape extends Room
      * @param x the Person entering
      */
     @Override
-    public void enterRoom(Person x,Bag b) {
-        occupant = x;
+    public void enterRoom(Person x,Bag y) {
 
+        occupant = x;
+        bag = y;
         x.setxLoc(this.xLoc);
         x.setyLoc(this.yLoc);
-        System.out.println("Congratulations! You found the escape!");
-        Runner.gameOff();
+        System.out.println("You have found Ammo!");
+        y.gainAmmo(5);
     }
 }
